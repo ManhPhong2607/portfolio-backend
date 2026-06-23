@@ -32,6 +32,7 @@ namespace MyPortfolio.Application.Features.Projects.Queries.GetProjectBySlug
                 ShortDescription: project.ShortDescription,
                 DetailContent: project.DetailContent,
                 ThumbnailUrl: project.ThumbnailMedia?.SecureUrl,
+                ThumbnailMediaId: project.ThumbnailMediaId,
                 DemoUrl: project.DemoUrl,
                 GithubUrl: project.GithubUrl,
                 Status: project.Status,

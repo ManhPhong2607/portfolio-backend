@@ -16,6 +16,7 @@ namespace MyPortfolio.Application.Features.BlogPosts.DTOs
         string Content,
         string? Excerpt,
         string? CoverImageUrl,
+        Guid? CoverMediaId,
         PostStatus Status,
         int ReadingTimeMinutes,
         int ViewCount,

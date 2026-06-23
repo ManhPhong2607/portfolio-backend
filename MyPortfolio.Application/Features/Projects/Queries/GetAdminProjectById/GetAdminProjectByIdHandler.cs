@@ -25,6 +25,7 @@ namespace MyPortfolio.Application.Features.Projects.Queries.GetAdminProjectById
                Slug: project.Slug.Value,
                ShortDescription: project.ShortDescription,
                DetailContent: project.DetailContent,
+               ThumbnailMediaId: project.ThumbnailMediaId,
                ThumbnailUrl: project.ThumbnailMedia?.SecureUrl,
                DemoUrl: project.DemoUrl,
                GithubUrl: project.GithubUrl,

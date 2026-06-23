@@ -15,6 +15,7 @@ namespace MyPortfolio.Application.Features.Projects.DTOs
     string? ShortDescription,
     string? DetailContent,
     string? ThumbnailUrl,
+    Guid? ThumbnailMediaId,
     string? DemoUrl,
     string? GithubUrl,
     ProjectStatus Status,

@@ -29,6 +29,7 @@ namespace MyPortfolio.Application.Features.BlogPosts.Queries.GetBlogBySlug
                 Excerpt: post.Excerpt,
                 Content: post.Content,
                 CoverImageUrl: post.CoverMedia?.SecureUrl,
+                CoverMediaId: post.CoverMediaId,
                 Status: post.Status,
                 ReadingTimeMinutes: post.ReadingTimeMinutes,
                 ViewCount: post.ViewCount,
