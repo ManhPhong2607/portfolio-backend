@@ -13,10 +13,11 @@ namespace MyPortfolio.Application.Features.Dashboard.DTOs
         int DraftPosts,
         int TotalProjects,
         int TotalDraftProjects,
-        //int TotalUnreadMessages,
-        List<DashboardPostDto> TopViewedPosts,   // top 3 nhiều view nhất
+        int TotalUnreadMessages,
+        int TotalViews,
+
         List<DashboardPostDto> RecentPosts,      // 3 bài tạo/sửa mới nhất
-        List<DashboardProjectDto> RecentProjects    // 3 project tạo/sửa mới nhất  
+        List<DashboardMessageDto> RecentMessages
     );
 
     public record DashboardPostDto(
@@ -29,12 +30,21 @@ namespace MyPortfolio.Application.Features.Dashboard.DTOs
         DateTime UpdatedAt
     );
 
-    public record DashboardProjectDto(
+    //public record DashboardProjectDto(
+    //    Guid Id,
+    //    string Title,
+    //    string Slug,
+    //    string Status,
+    //    bool IsFeatured,
+    //    DateTime UpdatedAt
+    //);
+
+    public record DashboardMessageDto(
         Guid Id,
-        string Title,
-        string Slug,
+        string SenderName,
+        string SenderEmail,
+        string? Subject,
         string Status,
-        bool IsFeatured,
-        DateTime UpdatedAt
+        DateTime SentAt
     );
 }

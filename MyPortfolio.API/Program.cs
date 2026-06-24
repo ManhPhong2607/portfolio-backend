@@ -3,6 +3,7 @@ using MyPortfolio.API.Middleware;
 using MyPortfolio.Application;
 using MyPortfolio.Infrastructure.Persistence;
 using System.Text;
+using System.Threading.RateLimiting;
 
 Console.OutputEncoding = Encoding.UTF8;
 var builder = WebApplication.CreateBuilder(args);
@@ -56,6 +57,28 @@ builder.Services.AddCors(options =>
     )
 );
 
+//rate limit(spam theo ip)
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("contact", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 3,
+                Window = TimeSpan.FromMinutes(10),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+
+    options.OnRejected = async (context, ct) =>
+    {
+        context.HttpContext.Response.StatusCode = 429;
+        await context.HttpContext.Response.WriteAsync(
+            "Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau.", ct);
+    };
+});
+
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandling>();
@@ -71,7 +94,7 @@ app.UseRouting();
 app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseRateLimiter();
 app.MapControllers();
 await DbSeeder.SeedAsync(app.Services);
 

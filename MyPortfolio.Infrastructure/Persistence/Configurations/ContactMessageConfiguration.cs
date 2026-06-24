@@ -32,5 +32,9 @@ public class ContactMessageConfiguration : IEntityTypeConfiguration<ContactMessa
         builder.HasIndex(x => x.Status);
 
         builder.Property(x => x.SentAt).IsRequired();
+
+        builder.Property(x => x.PreviousStatus)
+            .HasConversion<string>()
+            .HasMaxLength(20);
     }
 }

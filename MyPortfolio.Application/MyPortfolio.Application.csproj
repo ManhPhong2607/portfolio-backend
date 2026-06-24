@@ -19,8 +19,4 @@
     <ProjectReference Include="..\MyPortfolio.Domain\MyPortfolio.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Contact\" />
-  </ItemGroup>
-
 </Project>

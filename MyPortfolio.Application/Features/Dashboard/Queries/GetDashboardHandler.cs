@@ -8,45 +8,33 @@ namespace MyPortfolio.Application.Features.Dashboard.Queries
 {
     public class GetDashboardHandler(
          IBlogPostRepository blogRepository,
-         IProjectRepository projectRepository
-      // IContactMessageRepository contactRepository
+         IProjectRepository projectRepository,
+         IContactMessageRepository messageRepository
     ) : IRequestHandler<GetDashboardQuery, DashboardDto>
     {
         public async Task<DashboardDto> Handle(GetDashboardQuery request, CancellationToken ct)
         {
             var blogTask = await blogRepository.GetAllAsync(1, int.MaxValue, ct: ct);
             var projectTask = await projectRepository.GetAllAsync(1, int.MaxValue, ct: ct);
-            //var unreadTask = contactRepository.CountUnreadAsync(ct);
-
+            var unreadTask = await messageRepository.CountUnreadAsync(ct);
+            var messageTask = await messageRepository.GetAllAsync(1,3,ct:ct);
 
             var allPosts = blogTask.Items;
             var allProjects = projectTask.Items;
-            //var unread = unreadTask.Result;
+            var recentMsgs = messageTask.Items;
 
+            //stats
             var totalBlogPosts = allPosts.Count();
             var totalPublishedPosts = allPosts.Count(p => p.Status == PostStatus.Published);
             var draftPosts = allPosts.Count(p => p.Status == PostStatus.Draft);
             var totalProjects = allProjects.Count();
             var draftProjects = allProjects.Count(p => p.Status == ProjectStatus.Draft);
+            var totalViews = allPosts.Sum(p => p.ViewCount);
 
-            var topViewedPosts = allPosts
-                .Where(p => p.Status == PostStatus.Published)
-                .OrderByDescending(p => p.ViewCount)
-                .Take(5)
-                .Select(p => new DashboardPostDto(
-                    p.Id,
-                    p.Title,
-                    p.Slug.Value,
-                    p.Status.ToString(),
-                    p.ViewCount,
-                    p.PublishedAt,
-                    p.UpdateAt
-                ))
-                .ToList();
-
+            //3 bai moi nhat
             var recentPosts = allPosts
                 .OrderByDescending(x => x.UpdateAt)
-                .Take(5)
+                .Take(3)
                 .Select(x => new DashboardPostDto(
                     x.Id,
                     x.Title,
@@ -57,19 +45,18 @@ namespace MyPortfolio.Application.Features.Dashboard.Queries
                     x.UpdateAt
                 ))
                 .ToList();
-              
-            var recentProjects = allProjects
-              .OrderByDescending(p => p.UpdateAt)
-              .Take(5)
-              .Select(p => new DashboardProjectDto(
-                  Id: p.Id,
-                  Title: p.Title,
-                  Slug: p.Slug.Value,
-                  Status: p.Status.ToString(),
-                  IsFeatured: p.IsFeatured,
-                  UpdatedAt: p.UpdateAt
-              ))
-              .ToList();
+
+            //3 tin moi nhat
+            var recentMessages = recentMsgs
+                .Select(m => new DashboardMessageDto(
+                 Id: m.Id,
+                 SenderName: m.SenderName,
+                 SenderEmail: m.SenderEmail.Value,
+                 Subject: m.Subject,
+                 Status: m.Status.ToString(),
+                 SentAt: m.SentAt
+            )).ToList();
+        
 
             return new DashboardDto(
                  TotalBlogPosts: totalBlogPosts,
@@ -77,9 +64,10 @@ namespace MyPortfolio.Application.Features.Dashboard.Queries
                  DraftPosts: draftPosts,
                  TotalProjects: totalProjects,
                  TotalDraftProjects: draftProjects,
-                 TopViewedPosts: topViewedPosts,
+                 TotalViews: totalViews,
+                 TotalUnreadMessages: unreadTask,
                  RecentPosts: recentPosts,
-                 RecentProjects: recentProjects
+                 RecentMessages: recentMessages
             );
         }
 

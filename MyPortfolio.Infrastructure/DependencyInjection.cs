@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using MyPortfolio.Domain.Interfaces.Repositories;
 using MyPortfolio.Domain.Interfaces.Services;
 using MyPortfolio.Infrastructure.Persistence;
+using MyPortfolio.Infrastructure.Persistence.Configurations;
 using MyPortfolio.Infrastructure.Persistence.Repositories;
 using MyPortfolio.Infrastructure.Services;
 using System.Text;
@@ -25,6 +26,15 @@ public static class DependencyInjection
                     typeof(ApplicationDbContext).Assembly.FullName)
             )
         );
+        services.Configure<ResendOptions>(configuration.GetSection("Resend"));
+
+        services.AddHttpClient("Resend", client =>
+        {
+            client.BaseAddress = new Uri("https://api.resend.com/");
+            var apiKey = configuration["Resend:ApiKey"];
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+        });
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -41,6 +51,8 @@ public static class DependencyInjection
         services.AddScoped<IBlogPostRepository, BlogPostRepository>();
         services.AddScoped<ITechnologyRepository, TechnologyRepository>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<IEmailNotificationService, ResendEmailNotificationService>();
+        services.AddScoped<IContactMessageRepository, ContactMessageRepository>();
         var secret = configuration["Jwt:Secret"]
            ?? throw new InvalidOperationException("Jwt:Secret chưa cấu hình.");
 
